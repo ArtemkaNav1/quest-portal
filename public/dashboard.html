@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Операция «Подарок» — Центр управления</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', 'Courier New', monospace;
+      background: #020408;
+      color: #eef;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      opacity: 0.3;
+    }
+
+    .overlay-dark {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.1);
+      z-index: -1;
+    }
+
+    .intro-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease;
+    }
+
+    .intro-video-box {
+      max-width: 75%;
+      max-height: 75%;
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(0, 255, 136, 0.5);
+      border: 2px solid #0f0;
+      background: black;
+    }
+
+    .intro-video-box video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .skip-video-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid #0f0;
+      color: #0f0;
+      padding: 10px 20px;
+      border-radius: 40px;
+      font-family: monospace;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 2001;
+      transition: 0.2s;
+    }
+
+    .skip-video-btn:hover {
+      background: #0f0;
+      color: #000;
+      box-shadow: 0 0 15px #0f0;
+    }
+
+    .main-content {
+      max-width: 700px;
+      width: 90%;
+      margin: 0 auto;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      text-align: center;
+      display: none;
+    }
+
+    .main-content.visible {
+      display: block;
+      opacity: 1;
+    }
+
+    .hero {
+      margin-bottom: 40px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #0f0, #0af, #0f0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 15px;
+      min-height: 80px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #bbf;
+      border-left: 3px solid #0f0;
+      padding-left: 20px;
+      display: inline-block;
+    }
+
+    .quest-card {
+      position: relative;
+      border-radius: 60px;
+      overflow: hidden;
+      margin: 30px 0;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+      min-height: 480px;
+    }
+
+    .quest-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 50px rgba(0, 255, 136, 0.3);
+    }
+
+    .quest-card-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('/media/igra.jpeg');
+      background-size: cover;
+      background-position: top center;
+      background-repeat: no-repeat;
+      z-index: 0;
+    }
+
+    .quest-card-content {
+      position: relative;
+      z-index: 1;
+      padding: 60px 40px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 60px;
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .quest-card-content h3 {
+      font-size: 38px;
+      margin-bottom: 20px;
+      color: #0f0;
+      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .quest-card-content p {
+      color: #fff;
+      font-size: 18px;
+      margin-bottom: 35px;
+      text-shadow: 0 0 8px rgba(0,0,0,0.5);
+    }
+
+    .quest-card-content button {
+      background: rgba(0, 255, 136, 0.15);
+      border: 2px solid #0f0;
+      padding: 14px 45px;
+      border-radius: 50px;
+      color: #0f0;
+      font-weight: bold;
+      font-size: 20px;
+      cursor: pointer;
+      transition: 0.2s;
+      backdrop-filter: blur(4px);
+    }
+
+    .quest-card-content button:hover {
+      background: #0f0;
+      color: #000;
+      box-shadow: 0 0 20px #0f0;
+    }
+
+    .sound-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid #0f0;
+      color: #0f0;
+      padding: 12px 18px;
+      border-radius: 50px;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 100;
+      transition: 0.2s;
+      display: none;
+    }
+
+    .sound-btn:hover {
+      background: #0f0;
+      color: #000;
+      box-shadow: 0 0 15px #0f0;
+    }
+
+    .footer {
+      margin-top: 50px;
+      font-size: 12px;
+      color: #5a7;
+      border-top: 1px solid #1f3;
+      padding-top: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 32px; }
+      .intro-video-box { max-width: 90%; max-height: 60%; }
+      .quest-card, .quest-card-content { min-height: 400px; }
+      .quest-card-content { padding: 40px 20px; }
+      .quest-card-content h3 { font-size: 28px; }
+      .quest-card-content p { font-size: 14px; }
+      .quest-card-content button { font-size: 16px; padding: 10px 30px; }
+      .sound-btn { bottom: 15px; right: 15px; padding: 8px 14px; font-size: 16px; }
+      .skip-video-btn { bottom: 15px; right: 15px; padding: 6px 15px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<video class="bg-video" autoplay muted loop playsinline>
+  <source src="media/bg.mp4" type="video/mp4">
+</video>
+<div class="overlay-dark"></div>
+
+<!-- ВИДЕО-ЗАСТАВКА -->
+<div id="introOverlay" class="intro-overlay">
+  <div class="intro-video-box">
+    <video id="introVideo" autoplay playsinline>
+      <source src="/media/intro.mp4" type="video/mp4">
+    </video>
+  </div>
+  <button id="skipVideoBtn" class="skip-video-btn">#</button>
+</div>
+
+<!-- Звук -->
+<audio id="bgMusic" style="display: none;"></audio>
+<button id="soundToggleBtn" class="sound-btn">🔊 МУЗЫКА</button>
+
+<!-- ДАШБОРД -->
+<div id="mainContent" class="main-content">
+  <div class="hero">
+    <h1 id="greetingText"></h1>
+    <p>Центр управления подарком</p>
+  </div>
+  <div class="quest-card">
+    <div class="quest-card-bg"></div>
+    <div class="quest-card-content">
+      <h3>Давай сыграем в игру,хм?...</h3>
+      <p>Ответь на все вопросы — коробка откроется автоматически</p>
+      <button id="startQuestBtn">▶ НАЧАТЬ ◀</button>
+    </div>
+  </div>
+  <div class="footer">
+    🛡️ Предполагаешь, всё пойдет, как хочешь ты?
+  </div>
+</div>
+
+<script>
+  if (!localStorage.getItem('isLoggedIn')) {
+    window.location.href = '/';
+  }
+
+  const username = localStorage.getItem('username') || 'Агент';
+  
+  // ========== МАТРИЧНЫЙ ЭФФЕКТ (только для приветствия) ==========
+  const matrixChars = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789!@#$%^&*()_+[]{};:?/\\|<>";
+  
+  async function matrixText(element, finalText, delay = 70) {
+    let chars = finalText.split('');
+    let display = new Array(chars.length).fill('');
+    
+    for (let i = 0; i < chars.length; i++) {
+      // мелькание
+      for (let f = 0; f < 6; f++) {
+        display[i] = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+        element.innerHTML = display.join('');
+        await new Promise(r => setTimeout(r, 40));
+      }
+      // правильная буква
+      display[i] = chars[i];
+      element.innerHTML = display.join('');
+      element.style.textShadow = '0 0 8px #0f0';
+      await new Promise(r => setTimeout(r, 60));
+      element.style.textShadow = 'none';
+    }
+    element.style.color = '#0f0';
+  }
+
+  // ========== ВИДЕО-ЗАСТАВКА ==========
+  const overlay = document.getElementById('introOverlay');
+  const introVideo = document.getElementById('introVideo');
+  const skipBtn = document.getElementById('skipVideoBtn');
+  const mainDiv = document.getElementById('mainContent');
+  const music = document.getElementById('bgMusic');
+  const soundBtn = document.getElementById('soundToggleBtn');
+  const greetingEl = document.getElementById('greetingText');
+
+  let soundEnabled = true;
+  let musicStarted = false;
+  let matrixDone = false;
+
+  function startMusic() {
+    if (musicStarted) return;
+    musicStarted = true;
+    music.src = "/media/background-music.mp3";
+    music.loop = false;
+    music.play().catch(e => console.log("Автовоспроизведение заблокировано"));
+    soundBtn.style.display = "flex";
+  }
+
+  function stopAndHideVideo() {
+    if (introVideo) {
+      introVideo.pause();
+      introVideo.currentTime = 0;
+      introVideo.src = "";
+    }
+  }
+
+  async function finishIntro() {
+    stopAndHideVideo();
+    overlay.style.opacity = '0';
+    setTimeout(async () => {
+      overlay.style.display = 'none';
+      mainDiv.style.display = 'block';
+      setTimeout(() => {
+        mainDiv.classList.add('visible');
+      }, 50);
+      
+      if (!matrixDone) {
+        matrixDone = true;
+        await matrixText(greetingEl, `${username}, добро пожаловать`, 70);
+      }
+      startMusic();
+    }, 600);
+  }
+
+  introVideo.addEventListener('ended', finishIntro);
+  skipBtn.addEventListener('click', finishIntro);
+
+  setTimeout(() => {
+    if (overlay.style.display !== 'none') finishIntro();
+  }, 300000);
+
+  function stopMusic() {
+    music.pause();
+    music.currentTime = 0;
+  }
+
+  function playMusic() {
+    music.play().catch(e => console.log("Ошибка воспроизведения"));
+  }
+
+  soundBtn.onclick = () => {
+    if (soundEnabled) {
+      stopMusic();
+      soundEnabled = false;
+      soundBtn.innerHTML = "🔇 МУЗЫКА";
+    } else {
+      playMusic();
+      soundEnabled = true;
+      soundBtn.innerHTML = "🔊 МУЗЫКА";
+    }
+  };
+
+  document.getElementById('startQuestBtn').onclick = () => {
+    stopMusic();
+    window.location.href = '/quest-classic.html';
+  };
+</script>
+</body>
+</html>

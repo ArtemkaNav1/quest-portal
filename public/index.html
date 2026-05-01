@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Операция «Подарок» — Вход в систему</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', 'Courier New', monospace;
+            background: #05070f;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #0f0;
+        }
+
+        /* ========== ПАРАЛЛАКС-ФОН ========== */
+        .parallax-bg {
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            background-image: url('/media/bg1-login.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: -2;
+            transform: translateZ(0);
+            will-change: transform;
+            transition: transform 0.05s linear;
+        }
+
+        /* Лёгкое затемнение — теперь почти прозрачное */
+        .overlay-dark {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.2);  /* ← было 0.55, стало 0.2 */
+            z-index: -1;
+        }
+
+        /* Контент — терминал входа */
+        .content {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .terminal {
+            background: rgba(6, 12, 24, 0.8);
+            backdrop-filter: blur(16px);
+            border-radius: 48px;
+            padding: 40px 35px;
+            max-width: 520px;
+            width: 100%;
+            border: 1px solid #0f0;
+            box-shadow: 0 0 40px rgba(0, 255, 0, 0.2);
+            text-align: center;
+            transition: all 0.2s ease;
+            animation: floatIn 0.9s ease-out;
+        }
+
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .logo {
+            font-size: 44px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-shadow: 0 0 12px #0f0;
+            animation: pulseLogo 3s infinite;
+        }
+
+        @keyframes pulseLogo {
+            0% { text-shadow: 0 0 2px #0f0; }
+            50% { text-shadow: 0 0 18px #0b0; }
+            100% { text-shadow: 0 0 2px #0f0; }
+        }
+
+        .logo span {
+            color: #0af;
+            text-shadow: 0 0 8px #0af;
+        }
+
+        .sub {
+            font-size: 14px;
+            border-bottom: 1px dashed #0f0;
+            display: inline-block;
+            margin: 12px 0 28px;
+            letter-spacing: 2px;
+            color: #8f8;
+        }
+
+        .input-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .input-group label {
+            font-size: 13px;
+            letter-spacing: 1px;
+            color: #8f8;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            background: #010a14;
+            border: 1.5px solid #0f0;
+            border-radius: 40px;
+            padding: 14px 20px;
+            font-size: 18px;
+            color: #0f0;
+            font-family: monospace;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border-color: #0af;
+            box-shadow: 0 0 18px #0af;
+            transform: scale(1.01);
+        }
+
+        .enter-btn {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #0f0;
+            color: #0f0;
+            font-weight: bold;
+            font-size: 20px;
+            padding: 14px;
+            border-radius: 60px;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 18px;
+            font-family: monospace;
+        }
+
+        .enter-btn:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 28px #0f0;
+            transform: scale(1.02);
+        }
+
+        .error {
+            margin-top: 20px;
+            background: #90000033;
+            border-left: 4px solid #f44;
+            color: #f88;
+            padding: 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            animation: shake 0.2s ease-in-out 0s 2;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        .typewriter {
+            margin-top: 32px;
+            font-size: 12px;
+            color: #5b8;
+            letter-spacing: 0.5px;
+            font-family: monospace;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: #0f0;
+            vertical-align: middle;
+            margin-left: 6px;
+            animation: blinkCursor 1s step-end infinite;
+        }
+
+        @keyframes blinkCursor {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        footer {
+            font-size: 10px;
+            color: #363;
+            margin-top: 22px;
+        }
+
+        @media (max-width: 600px) {
+            .terminal { padding: 30px 20px; margin: 20px; }
+            .logo { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="parallax-bg" id="parallaxBg"></div>
+<div class="overlay-dark"></div>
+
+<div class="content">
+    <div class="terminal">
+        <div class="logo">Сывлӑх сунатӑп!</span> ⚡</div>
+        <div class="sub">ДОСТУП ПО СПЕЦПРИГЛАШЕНИЮ</div>
+
+        <div class="input-group">
+            <label>🔐 ИДЕНТИФИКАТОР</label>
+            <input type="text" id="login" placeholder="Логин " autocomplete="off">
+        </div>
+
+        <div class="input-group">
+            <label>🗝️ СЕКРЕТНЫЙ КЛЮЧ</label>
+            <input type="password" id="password" placeholder="Пароль доступа">
+        </div>
+
+        <button class="enter-btn" id="enterBtn">▶ ВОЙТИ В СИСТЕМУ ◀</button>
+        <div id="errorMsg" class="error" style="display: none;"></div>
+
+        <div class="typewriter" id="typewriter"></div>
+        <footer>v 3.0 • Добро пожаловать домой, Алехандро!</footer>
+    </div>
+</div>
+
+<script>
+    // Параллакс
+    const parallaxBg = document.getElementById('parallaxBg');
+    document.addEventListener('mousemove', (e) => {
+        const mouseX = e.clientX / window.innerWidth;
+        const mouseY = e.clientY / window.innerHeight;
+        const moveX = (mouseX - 0.5) * 30;
+        const moveY = (mouseY - 0.5) * 30;
+        parallaxBg.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    });
+
+    // Печатная машинка
+    const text = "> Система готова. Введите учётные данные.";
+    let idx = 0;
+    const typewriterEl = document.getElementById("typewriter");
+
+    function typeNext() {
+        if (idx < text.length) {
+            typewriterEl.innerHTML += text.charAt(idx);
+            idx++;
+            setTimeout(typeNext, 45);
+        } else {
+            const cursorSpan = document.createElement("span");
+            cursorSpan.className = "cursor";
+            typewriterEl.appendChild(cursorSpan);
+        }
+    }
+    typeNext();
+
+    // Вход
+    const LOGIN = "21";
+    const PASSWORD = "region";
+
+    document.getElementById('enterBtn').onclick = () => {
+        const loginField = document.getElementById('login').value.trim();
+        const passField = document.getElementById('password').value.trim();
+        const errorDiv = document.getElementById('errorMsg');
+
+        if (loginField === LOGIN && passField === PASSWORD) {
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('username', 'Александр');
+            window.location.href = '/dashboard.html';
+        } else {
+            errorDiv.style.display = 'block';
+            errorDiv.innerHTML = '❌ ОТКАЗАНО В ДОСТУПЕ! Проверьте логин и пароль. ❌';
+            const terminal = document.querySelector('.terminal');
+            terminal.style.transform = 'translateX(5px)';
+            setTimeout(() => { terminal.style.transform = 'translateX(-5px)'; }, 70);
+            setTimeout(() => { terminal.style.transform = 'translateX(0)'; }, 140);
+        }
+    };
+
+    document.getElementById('password').onkeypress = (e) => {
+        if (e.key === 'Enter') document.getElementById('enterBtn').click();
+    };
+</script>
+</body>
+</html>
