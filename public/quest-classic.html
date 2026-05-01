@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Квест — Операция «Подарок»</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0f1e, #0a1a1a);
+      font-family: 'Courier New', monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .quest-container {
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+      border-radius: 40px;
+      padding: 30px 25px;
+      max-width: 550px;
+      width: 100%;
+      text-align: center;
+      border: 2px solid #00ff88;
+      box-shadow: 0 0 40px rgba(0,255,136,0.3);
+      animation: fadeInUp 0.5s ease;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h1 {
+      color: #00ff88;
+      font-size: 26px;
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+    }
+    .sub {
+      color: #88ffaa;
+      border-bottom: 1px solid #00ff88;
+      display: inline-block;
+      padding-bottom: 5px;
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+    .question-box {
+      background: #0f1422;
+      padding: 20px;
+      border-radius: 24px;
+      margin: 20px 0;
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+      border-left: 6px solid #00ff88;
+      text-align: left;
+      word-break: break-word;
+    }
+    input {
+      width: 100%;
+      padding: 14px;
+      font-size: 20px;
+      text-align: center;
+      background: #0a0f1e;
+      border: 2px solid #00ff88;
+      border-radius: 60px;
+      color: #00ff88;
+      font-family: monospace;
+      margin-bottom: 18px;
+      outline: none;
+    }
+    input:focus { box-shadow: 0 0 12px #00ff88; }
+    button {
+      background: #00ff88;
+      color: #000;
+      border: none;
+      padding: 14px 20px;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 60px;
+      width: 100%;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: monospace;
+    }
+    button:active { transform: scale(0.97); }
+    .reset-btn {
+      background: rgba(0,0,0,0.6);
+      border: 1px solid #ff4444;
+      color: #ff4444;
+      margin-top: 12px;
+    }
+    .reset-btn:hover {
+      background: #ff4444;
+      color: #000;
+      box-shadow: 0 0 12px #ff4444;
+    }
+    .message {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 20px;
+      background: #11151f;
+      color: #ffaa44;
+      font-size: 14px;
+    }
+    .success { color: #00ff88; }
+    .error { color: #ff5555; }
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: #00cc88;
+      text-decoration: none;
+      font-size: 14px;
+      border: 1px solid #00ff88;
+      padding: 8px 20px;
+      border-radius: 40px;
+      transition: 0.2s;
+      background: rgba(0,0,0,0.5);
+    }
+    .back-link:hover { background: #00ff8822; color: #0f0; }
+    footer {
+      margin-top: 20px;
+      font-size: 11px;
+      color: #446;
+    }
+  </style>
+</head>
+<body>
+<div class="quest-container">
+  <h1>🎯 СЕКРЕТНЫЙ КВЕСТ</h1>
+  <div class="sub">введи код доступа</div>
+
+  <div class="question-box" id="questionText">Загрузка вопросов...</div>
+
+  <input type="text" id="answerInput" placeholder="✍️ твой ответ" autocomplete="off">
+  <button id="submitBtn">🔓 ОТПРАВИТЬ</button>
+
+  <!-- ПРОСТАЯ КНОПКА СБРОСА — ПЕРЕЗАГРУЖАЕТ СТРАНИЦУ -->
+  <button id="resetQuestBtn" class="reset-btn" onclick="resetQuest()">🔄 СБРОСИТЬ КВЕСТ</button>
+
+  <div id="messageArea" class="message"></div>
+
+  <a href="/dashboard.html" class="back-link">◀ ВЕРНУТЬСЯ В ШТАБ</a>
+  <footer>операция «Подарок» • уровень 1</footer>
+</div>
+
+<script>
+  const questMessages = [
+    "ВВЕДИТЕ ВАШ ВОЗРАСТ (НАПРИМЕР: 18)",
+    "🚗 Какая машина сейчас у вас?",
+    "Имя вашего любимого человека(Жена/Муж)",
+    "Имя вашего ребенка",
+    "📅 Какой сейчас год?",
+    "Сколько струн у балалайки?",
+    "Имя и отчество вашего любимого начальника",
+    "Имя и отчество вашего любимого начальника"
+    
+
+  ];
+
+  let currentQuestIndex = 0;
+  let completedFlag = false;
+
+  // Функция сброса — просто перезагружает страницу
+  // Сервер уже должен обрабатывать /reset (GET)
+  function resetQuest() {
+    if (confirm('Сбросить квест? Все ответы нужно будет вводить заново.')) {
+      // Сначала отправляем запрос на сброс на сервер
+      fetch('/reset', { method: 'POST' }).catch(e => console.log(e));
+      // Через полсекунды перезагружаем страницу
+      setTimeout(() => {
+        window.location.href = '/quest-classic.html';
+      }, 200);
+    }
+  }
+
+  async function checkStatus() {
+    try {
+      const res = await fetch('/status');
+      const data = await res.json();
+      if (data.completed && !completedFlag) {
+        completedFlag = true;
+        document.getElementById('questionText').innerHTML = "✅ ПОДАРОК ОТКРЫТ! ✅";
+        document.getElementById('answerInput').disabled = true;
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('messageArea').innerHTML = "🎁 Коробка открыта! Забирай подарок!";
+        document.getElementById('messageArea').className = "message success";
+        return;
+      }
+      if (data.quest !== currentQuestIndex && !data.completed) {
+        currentQuestIndex = data.quest;
+        if (currentQuestIndex < questMessages.length)
+          document.getElementById('questionText').innerHTML = questMessages[currentQuestIndex];
+        else
+          document.getElementById('questionText').innerHTML = "🎉 ВСЕ ЗАДАНИЯ ВЫПОЛНЕНЫ!";
+      }
+    } catch(e) { console.log("Ошибка получения статуса:", e); }
+  }
+
+  document.getElementById('submitBtn').onclick = async () => {
+    const input = document.getElementById('answerInput');
+    const answer = input.value.trim();
+    if (!answer) return;
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerText = "⏳ ПРОВЕРКА...";
+
+    try {
+      const res = await fetch('/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answer })
+      });
+      const data = await res.json();
+      const msgDiv = document.getElementById('messageArea');
+      if (data.success) {
+        msgDiv.innerHTML = "✅ ВЕРНО! Переходим к следующему заданию...";
+        msgDiv.className = "message success";
+        input.value = "";
+        if (data.nextQuest < questMessages.length) {
+          currentQuestIndex = data.nextQuest;
+          document.getElementById('questionText').innerHTML = questMessages[currentQuestIndex];
+        }
+        if (data.completed) {
+          document.getElementById('questionText').innerHTML = "🎉 ПОЗДРАВЛЯЮ! КОРОБКА ОТКРЫТА! 🎉";
+          document.getElementById('answerInput').disabled = true;
+          document.getElementById('submitBtn').disabled = true;
+        }
+      } else {
+        msgDiv.innerHTML = "❌ " + (data.message || "НЕВЕРНО! Попробуй ещё.");
+        msgDiv.className = "message error";
+      }
+    } catch(err) {
+      document.getElementById('messageArea').innerHTML = "❌ Ошибка связи. Попробуй позже.";
+      document.getElementById('messageArea').className = "message error";
+    } finally {
+      btn.disabled = false;
+      btn.innerText = "🔓 ОТПРАВИТЬ";
+    }
+  };
+
+  fetch('/status')
+    .then(r => r.json())
+    .then(data => {
+      if (data.completed) {
+        document.getElementById('questionText').innerHTML = "🎁 ПОДАРОК УЖЕ ОТКРЫТ! 🎁";
+        document.getElementById('answerInput').disabled = true;
+        document.getElementById('submitBtn').disabled = true;
+        completedFlag = true;
+      } else {
+        currentQuestIndex = data.quest;
+        if (currentQuestIndex < questMessages.length)
+          document.getElementById('questionText').innerHTML = questMessages[currentQuestIndex];
+      }
+    })
+    .catch(e => console.log("Ошибка загрузки статуса:", e));
+
+  setInterval(checkStatus, 3000);
+</script>
+</body>
+</html>
