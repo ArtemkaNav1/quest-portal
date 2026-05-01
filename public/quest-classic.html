@@ -129,7 +129,7 @@
 <body>
 <div class="quest-container">
   <h1>🎯 СЕКРЕТНЫЙ КВЕСТ</h1>
-  <div class="sub">введи код доступа</div>
+  <div class="sub"></div>
 
   <div class="question-box" id="questionText">Загрузка вопросов...</div>
 
@@ -229,7 +229,7 @@
           document.getElementById('submitBtn').disabled = true;
         }
       } else {
-        msgDiv.innerHTML = "❌ " + (data.message || "НЕВЕРНО! Попробуй ещё.");
+        msgDiv.innerHTML = "❌ " + (data.message || "Пупупу, ошибочка! Попробуй ещё.");
         msgDiv.className = "message error";
       }
     } catch(err) {
