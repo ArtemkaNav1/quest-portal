@@ -258,19 +258,20 @@
 </head>
 <body>
 
+<!-- 🔥 ФОНОВОЕ ВИДЕО — ИСПРАВЛЕН ПУТЬ -->
 <video class="bg-video" autoplay muted loop playsinline>
-  <source src="media/bg.mp4" type="video/mp4">
+  <source src="/media/bg.mp4" type="video/mp4">
 </video>
 <div class="overlay-dark"></div>
 
-<!-- ВИДЕО-ЗАСТАВКА -->
+<!-- ВИДЕО-ЗАСТАВКА (путь правильный) -->
 <div id="introOverlay" class="intro-overlay">
   <div class="intro-video-box">
     <video id="introVideo" autoplay playsinline>
       <source src="/media/intro.mp4" type="video/mp4">
     </video>
   </div>
-  <button id="skipVideoBtn" class="skip-video-btn">#</button>
+  <button id="skipVideoBtn" class="skip-video-btn">⏩ ПРОПУСТИТЬ</button>
 </div>
 
 <!-- Звук -->
@@ -303,7 +304,6 @@
 
   const username = localStorage.getItem('username') || 'Агент';
   
-  // ========== МАТРИЧНЫЙ ЭФФЕКТ (только для приветствия) ==========
   const matrixChars = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789!@#$%^&*()_+[]{};:?/\\|<>";
   
   async function matrixText(element, finalText, delay = 70) {
@@ -311,13 +311,11 @@
     let display = new Array(chars.length).fill('');
     
     for (let i = 0; i < chars.length; i++) {
-      // мелькание
       for (let f = 0; f < 6; f++) {
         display[i] = matrixChars[Math.floor(Math.random() * matrixChars.length)];
         element.innerHTML = display.join('');
         await new Promise(r => setTimeout(r, 40));
       }
-      // правильная буква
       display[i] = chars[i];
       element.innerHTML = display.join('');
       element.style.textShadow = '0 0 8px #0f0';
@@ -327,7 +325,6 @@
     element.style.color = '#0f0';
   }
 
-  // ========== ВИДЕО-ЗАСТАВКА ==========
   const overlay = document.getElementById('introOverlay');
   const introVideo = document.getElementById('introVideo');
   const skipBtn = document.getElementById('skipVideoBtn');
