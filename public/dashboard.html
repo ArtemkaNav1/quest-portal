@@ -318,8 +318,13 @@
   </div>
 </div>
 
-<!-- Скрытая кнопка для теста серво -->
-<button id="testServoBtn" class="test-servo-btn">🔧 ТЕСТ</button>
+<!-- Панель теста серво -->
+<div style="position: fixed; bottom: 10px; left: 10px; z-index: 9999; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); padding: 8px 12px; border-radius: 20px; border: 1px solid #0f0;">
+  <div style="color: #0f0; font-size: 11px; margin-bottom: 6px;">🎚️ ТЕСТ СЕРВО</div>
+  <input type="range" id="servoAngleSlider" min="0" max="180" value="90" style="width: 140px;">
+  <span id="angleValue" style="color: #0f0; margin-left: 6px; font-size: 12px;">90°</span>
+  <button id="applyAngleBtn" style="background: #0f0; color: #000; border: none; border-radius: 16px; padding: 2px 10px; margin-left: 6px; cursor: pointer; font-size: 11px;">ПРИМЕНИТЬ</button>
+</div>
 
 <script>
   if (!localStorage.getItem('isLoggedIn')) {
@@ -430,12 +435,32 @@
     window.location.href = '/quest-classic.html';
   };
 
-  // Тест серво
-  const testBtn = document.getElementById('testServoBtn');
-  testBtn.addEventListener('click', () => {
-    fetch('/test-servo', { method: 'POST' })
-      .then(() => console.log('🔧 Тест серво отправлен'))
-      .catch(e => console.error('Ошибка:', e));
+  // ========== ТЕСТ СЕРВО — ползунок ==========
+  const slider = document.getElementById('servoAngleSlider');
+  const angleSpan = document.getElementById('angleValue');
+  const applyBtn = document.getElementById('applyAngleBtn');
+
+  slider.addEventListener('input', () => {
+    angleSpan.innerText = slider.value + '°';
+  });
+
+  applyBtn.addEventListener('click', () => {
+    const angle = parseInt(slider.value);
+    fetch('/servo-angle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ angle: angle })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        console.log(`Угол ${angle}° отправлен на ESP8266`);
+        alert(`Команда на угол ${angle}° отправлена`);
+      } else {
+        alert('Ошибка: ' + data.message);
+      }
+    })
+    .catch(e => console.error('Ошибка отправки', e));
   });
 </script>
 </body>
