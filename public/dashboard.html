@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title></title>
+  <title>Операция «Подарок» — Центр управления</title>
   <style>
     * {
       margin: 0;
@@ -81,7 +81,7 @@
       background: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(8px);
       border: 1px solid #0f0;
-      color: rgb(240, 240, 240);
+      color: #fff;
       padding: 10px 20px;
       border-radius: 40px;
       font-family: monospace;
@@ -243,6 +243,26 @@
       padding-top: 20px;
     }
 
+    /* Кнопка теста серво (почти невидимая) */
+    .test-servo-btn {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid #0f0;
+      color: #0f0;
+      border-radius: 20px;
+      padding: 5px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      opacity: 0.3;
+      transition: opacity 0.2s;
+      z-index: 9999;
+    }
+    .test-servo-btn:hover {
+      opacity: 1;
+    }
+
     @media (max-width: 600px) {
       .hero h1 { font-size: 32px; }
       .intro-video-box { max-width: 90%; max-height: 60%; }
@@ -253,32 +273,33 @@
       .quest-card-content button { font-size: 16px; padding: 10px 30px; }
       .sound-btn { bottom: 15px; right: 15px; padding: 8px 14px; font-size: 16px; }
       .skip-video-btn { bottom: 15px; right: 15px; padding: 6px 15px; font-size: 14px; }
+      .test-servo-btn { bottom: 5px; left: 5px; padding: 3px 8px; font-size: 10px; }
     }
   </style>
 </head>
 <body>
 
-<!-- 🔥 ФОНОВОЕ ВИДЕО — ИСПРАВЛЕН ПУТЬ -->
+<!-- Фоновое видео -->
 <video class="bg-video" autoplay muted loop playsinline>
   <source src="/media/bg.mp4" type="video/mp4">
 </video>
 <div class="overlay-dark"></div>
 
-<!-- ВИДЕО-ЗАСТАВКА (путь правильный) -->
+<!-- Видео-заставка -->
 <div id="introOverlay" class="intro-overlay">
   <div class="intro-video-box">
     <video id="introVideo" autoplay playsinline>
       <source src="/media/intro.mp4" type="video/mp4">
     </video>
   </div>
-  <button id="skipVideoBtn" class="skip-video-btn">-</button>
+  <button id="skipVideoBtn" class="skip-video-btn">⏩ ПРОПУСТИТЬ</button>
 </div>
 
 <!-- Звук -->
 <audio id="bgMusic" style="display: none;"></audio>
 <button id="soundToggleBtn" class="sound-btn">🔊 МУЗЫКА</button>
 
-<!-- ДАШБОРД -->
+<!-- Дашборд -->
 <div id="mainContent" class="main-content">
   <div class="hero">
     <h1 id="greetingText"></h1>
@@ -287,7 +308,7 @@
   <div class="quest-card">
     <div class="quest-card-bg"></div>
     <div class="quest-card-content">
-      <h3>Давай сыграем в игру,хм?...</h3>
+      <h3>Давай сыграем в игру, хм?...</h3>
       <p>Ответь на все вопросы — коробка откроется автоматически</p>
       <button id="startQuestBtn">▶ НАЧАТЬ ◀</button>
     </div>
@@ -296,6 +317,9 @@
     🛡️ Предполагаешь, всё пойдет, как хочешь ты?
   </div>
 </div>
+
+<!-- Скрытая кнопка для теста серво -->
+<button id="testServoBtn" class="test-servo-btn">🔧 ТЕСТ</button>
 
 <script>
   if (!localStorage.getItem('isLoggedIn')) {
@@ -405,6 +429,14 @@
     stopMusic();
     window.location.href = '/quest-classic.html';
   };
+
+  // Тест серво
+  const testBtn = document.getElementById('testServoBtn');
+  testBtn.addEventListener('click', () => {
+    fetch('/test-servo', { method: 'POST' })
+      .then(() => console.log('🔧 Тест серво отправлен'))
+      .catch(e => console.error('Ошибка:', e));
+  });
 </script>
 </body>
 </html>
