@@ -271,7 +271,7 @@
       <source src="/media/intro.mp4" type="video/mp4">
     </video>
   </div>
-  <button id="skipVideoBtn" class="skip-video-btn">⏩ ПРОПУСТИТЬ</button>
+  <button id="skipVideoBtn" class="skip-video-btn">-</button>
 </div>
 
 <!-- Звук -->
@@ -282,7 +282,7 @@
 <div id="mainContent" class="main-content">
   <div class="hero">
     <h1 id="greetingText"></h1>
-    <p>Центр управления подарком</p>
+    <p></p>
   </div>
   <div class="quest-card">
     <div class="quest-card-bg"></div>
@@ -366,9 +366,10 @@
       
       if (!matrixDone) {
         matrixDone = true;
+        startMusic();
         await matrixText(greetingEl, `${username}, добро пожаловать`, 70);
       }
-      startMusic();
+      
     }, 600);
   }
 
