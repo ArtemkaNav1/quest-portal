@@ -2,9 +2,8 @@ const express = require('express');
 const app = express();
 
 let questState = { current: 0, completed: false };
-
-// ========== НОВАЯ ПЕРЕМЕННАЯ ДЛЯ ТЕСТА СЕРВО ==========
 let testServoRequested = false;
+let requestedServoAngle = -1;   // -1 = нет команды
 
 const questMessages = [
   { text: "ВВЕДИТЕ ВАШ ВОЗРАСТ (НАПРИМЕР:18):", answer: "30" },
@@ -23,15 +22,16 @@ const questMessages = [
 app.use(express.json());
 app.use(express.static('public'));
 
-// ========== ИЗМЕНЁННЫЙ /status – добавляем testServo ==========
 app.get('/status', (req, res) => {
   const response = {
     quest: questState.current,
     completed: questState.completed,
-    testServo: testServoRequested   // новое поле
+    testServo: testServoRequested,
+    servoAngle: requestedServoAngle
   };
-  // Сбрасываем флаг после того, как отдали
+  // Сбрасываем флаги после отправки
   testServoRequested = false;
+  requestedServoAngle = -1;
   res.json(response);
 });
 
@@ -56,14 +56,23 @@ app.post('/submit', (req, res) => {
   }
 });
 
-// ========== НОВЫЙ ОБРАБОТЧИК ДЛЯ ТЕСТА СЕРВО ==========
 app.post('/test-servo', (req, res) => {
   testServoRequested = true;
   console.log("🔧 Тест серво запрошен");
   res.json({ success: true });
 });
 
-// ========== СБРОС (РАБОТАЕТ И POST, И GET) ==========
+app.post('/servo-angle', (req, res) => {
+  const { angle } = req.body;
+  if (typeof angle === 'number' && angle >= 0 && angle <= 180) {
+    requestedServoAngle = angle;
+    console.log(`🎚️ Запрошен угол серво: ${angle}°`);
+    res.json({ success: true, angle: angle });
+  } else {
+    res.json({ success: false, message: "Угол должен быть от 0 до 180" });
+  }
+});
+
 app.post('/reset', (req, res) => {
   questState = { current: 0, completed: false };
   console.log("🔄 Квест сброшен (POST)!");
