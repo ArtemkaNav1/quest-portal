@@ -89,7 +89,7 @@
       cursor: pointer;
       z-index: 2001;
       transition: 0.2s;
-      opacity: 0.1;
+      opacity: 0.3;
     }
 
     .skip-video-btn:hover {
@@ -245,7 +245,7 @@
       padding-top: 20px;
     }
 
-    /* Стиль скрытой панели теста серво — как у кнопки пропуска */
+    /* Стиль скрытой панели теста серво (закомментирован, но оставлен) */
     .test-panel {
       position: fixed;
       bottom: 10px;
@@ -256,16 +256,16 @@
       border-radius: 20px;
       padding: 4px 10px;
       z-index: 9999;
-      opacity: 0.1;
+      opacity: 0.2;
       transition: opacity 0.2s, background 0.2s;
     }
     .test-panel:hover {
       opacity: 1;
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.6);
     }
     .test-panel .label {
       color: #0f0;
-      font-size: 2px;
+      font-size: 10px;
       margin-bottom: 4px;
       text-align: center;
     }
@@ -320,7 +320,7 @@
       <source src="/media/intro.mp4" type="video/mp4">
     </video>
   </div>
-  <button id="skipVideoBtn" class="skip-video-btn">-</button>
+  <button id="skipVideoBtn" class="skip-video-btn">⏩</button>
 </div>
 
 <!-- Звук -->
@@ -346,13 +346,47 @@
   </div>
 </div>
 
-<!-- Скрытая панель теста серво (почти невидима, как кнопка пропуска) -->
+<!-- ========== ТЕСТОВАЯ ПАНЕЛЬ СЕРВО (ЗАКОММЕНТИРОВАНА) ==========
+     Если понадобится раскомментировать – удали символы <!-- и --> 
+     и убедись, что в server.js есть обработчик /servo-angle
+-->
+<!--
 <div class="test-panel">
-  <div class="label">+</div>
+  <div class="label">⚙️ ТЕСТ СЕРВО</div>
   <input type="range" id="servoAngleSlider" min="0" max="180" value="90">
   <span id="angleValue">90°</span>
   <button id="applyAngleBtn">OK</button>
 </div>
+
+<script>
+  const slider = document.getElementById('servoAngleSlider');
+  const angleSpan = document.getElementById('angleValue');
+  const applyBtn = document.getElementById('applyAngleBtn');
+
+  slider.addEventListener('input', () => {
+    angleSpan.innerText = slider.value + '°';
+  });
+
+  applyBtn.addEventListener('click', () => {
+    const angle = parseInt(slider.value);
+    fetch('/servo-angle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ angle: angle })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        console.log(`Угол ${angle}° отправлен на ESP8266`);
+        alert(`Команда на угол ${angle}° отправлена`);
+      } else {
+        alert('Ошибка: ' + data.message);
+      }
+    })
+    .catch(e => console.error('Ошибка отправки', e));
+  });
+</script>
+-->
 
 <script>
   if (!localStorage.getItem('isLoggedIn')) {
@@ -462,34 +496,6 @@
     stopMusic();
     window.location.href = '/quest-classic.html';
   };
-
-  // ========== ТЕСТ СЕРВО — ползунок ==========
-  const slider = document.getElementById('servoAngleSlider');
-  const angleSpan = document.getElementById('angleValue');
-  const applyBtn = document.getElementById('applyAngleBtn');
-
-  slider.addEventListener('input', () => {
-    angleSpan.innerText = slider.value + '°';
-  });
-
-  applyBtn.addEventListener('click', () => {
-    const angle = parseInt(slider.value);
-    fetch('/servo-angle', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ angle: angle })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        console.log(`Угол ${angle}° отправлен на ESP8266`);
-        alert(`Команда на угол ${angle}° отправлена`);
-      } else {
-        alert('Ошибка: ' + data.message);
-      }
-    })
-    .catch(e => console.error('Ошибка отправки', e));
-  });
 </script>
 </body>
 </html>
