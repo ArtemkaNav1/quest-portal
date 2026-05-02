@@ -89,7 +89,7 @@
       cursor: pointer;
       z-index: 2001;
       transition: 0.2s;
-      opacity: 0.3;
+      opacity: 0.1;
     }
 
     .skip-video-btn:hover {
@@ -256,16 +256,16 @@
       border-radius: 20px;
       padding: 4px 10px;
       z-index: 9999;
-      opacity: 0.2;
+      opacity: 0.1;
       transition: opacity 0.2s, background 0.2s;
     }
     .test-panel:hover {
       opacity: 1;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.2);
     }
     .test-panel .label {
       color: #0f0;
-      font-size: 10px;
+      font-size: 2px;
       margin-bottom: 4px;
       text-align: center;
     }
@@ -320,7 +320,7 @@
       <source src="/media/intro.mp4" type="video/mp4">
     </video>
   </div>
-  <button id="skipVideoBtn" class="skip-video-btn">⏩</button>
+  <button id="skipVideoBtn" class="skip-video-btn">-</button>
 </div>
 
 <!-- Звук -->
@@ -348,7 +348,7 @@
 
 <!-- Скрытая панель теста серво (почти невидима, как кнопка пропуска) -->
 <div class="test-panel">
-  <div class="label">⚙️ ТЕСТ СЕРВО</div>
+  <div class="label">+</div>
   <input type="range" id="servoAngleSlider" min="0" max="180" value="90">
   <span id="angleValue">90°</span>
   <button id="applyAngleBtn">OK</button>
