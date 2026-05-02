@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title></title>
+  <title>Операция «Подарок» — Центр управления</title>
   <style>
     * {
       margin: 0;
@@ -78,22 +78,25 @@
       position: fixed;
       bottom: 25px;
       right: 25px;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(8px);
       border: 1px solid #0f0;
-      color: #fff;
-      padding: 10px 20px;
+      color: #0f0;
+      padding: 4px 12px;
+      border-radius: 40px;
       font-family: monospace;
-      font-size: 16px;
+      font-size: 12px;
       cursor: pointer;
       z-index: 2001;
       transition: 0.2s;
+      opacity: 0.3;
     }
 
     .skip-video-btn:hover {
       background: #0f0;
       color: #000;
       box-shadow: 0 0 15px #0f0;
+      opacity: 1;
     }
 
     .main-content {
@@ -242,7 +245,51 @@
       padding-top: 20px;
     }
 
-   
+    /* Стиль скрытой панели теста серво — как у кнопки пропуска */
+    .test-panel {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(8px);
+      border: 1px solid #0f0;
+      border-radius: 20px;
+      padding: 4px 10px;
+      z-index: 9999;
+      opacity: 0.2;
+      transition: opacity 0.2s, background 0.2s;
+    }
+    .test-panel:hover {
+      opacity: 1;
+      background: rgba(0, 0, 0, 0.6);
+    }
+    .test-panel .label {
+      color: #0f0;
+      font-size: 10px;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+    .test-panel input {
+      width: 120px;
+      vertical-align: middle;
+    }
+    .test-panel span {
+      color: #0f0;
+      font-size: 11px;
+      margin-left: 4px;
+    }
+    .test-panel button {
+      background: #0f0;
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      padding: 2px 8px;
+      margin-left: 6px;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
     @media (max-width: 600px) {
       .hero h1 { font-size: 32px; }
       .intro-video-box { max-width: 90%; max-height: 60%; }
@@ -253,7 +300,8 @@
       .quest-card-content button { font-size: 16px; padding: 10px 30px; }
       .sound-btn { bottom: 15px; right: 15px; padding: 8px 14px; font-size: 16px; }
       .skip-video-btn { bottom: 15px; right: 15px; padding: 6px 15px; font-size: 14px; }
-      .test-servo-btn { bottom: 5px; left: 5px; padding: 3px 8px; font-size: 10px; }
+      .test-panel { bottom: 5px; left: 5px; padding: 2px 6px; }
+      .test-panel input { width: 100px; }
     }
   </style>
 </head>
@@ -272,7 +320,7 @@
       <source src="/media/intro.mp4" type="video/mp4">
     </video>
   </div>
-  <button id="skipVideoBtn" class="skip-video-btn">-</button>
+  <button id="skipVideoBtn" class="skip-video-btn">⏩</button>
 </div>
 
 <!-- Звук -->
@@ -298,13 +346,13 @@
   </div>
 </div>
 
-<!-- <!-- Панель теста серво -->
-<div style="position: fixed; bottom: 10px; left: 10px; z-index: 9999; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); padding: 8px 12px; border-radius: 20px; border: 1px solid #0f0;">
-  <div style="color: #0f0; font-size: 11px; margin-bottom: 6px;">🎚️ ТЕСТ СЕРВО</div>
-  <input type="range" id="servoAngleSlider" min="0" max="180" value="90" style="width: 140px;">
-  <span id="angleValue" style="color: #0f0; margin-left: 6px; font-size: 12px;">90°</span>
-  <button id="applyAngleBtn" style="background: #0f0; color: #000; border: none; border-radius: 16px; padding: 2px 10px; margin-left: 6px; cursor: pointer; font-size: 11px;">ПРИМЕНИТЬ</button>
-</div> -->
+<!-- Скрытая панель теста серво (почти невидима, как кнопка пропуска) -->
+<div class="test-panel">
+  <div class="label">⚙️ ТЕСТ СЕРВО</div>
+  <input type="range" id="servoAngleSlider" min="0" max="180" value="90">
+  <span id="angleValue">90°</span>
+  <button id="applyAngleBtn">OK</button>
+</div>
 
 <script>
   if (!localStorage.getItem('isLoggedIn')) {
