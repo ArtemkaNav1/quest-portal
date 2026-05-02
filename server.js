@@ -3,26 +3,36 @@ const app = express();
 
 let questState = { current: 0, completed: false };
 
+// ========== НОВАЯ ПЕРЕМЕННАЯ ДЛЯ ТЕСТА СЕРВО ==========
+let testServoRequested = false;
+
 const questMessages = [
   { text: "ВВЕДИТЕ ВАШ ВОЗРАСТ (НАПРИМЕР:18):", answer: "30" },
   { text: "🚗 Какая машина сейчас у тебя?", answer: "мазда" },
-{ text: "Имя вашего любимого человека(Жена/Муж)", answer: "Юля" },
-{ text: "Имя вашего ребенка", answer: "Василиса" },
-{ text: "📅 Какой сейчас год?", answer: "2026" },
-{ text: "Сколько струн у балалайки?", answer: "3" },
-{ text: "Имя вашего любимого начальника", answer: "Сергей Викторович" },
-{ text: "В какой стране, недавно обнаружили комаров?", answer: "Исландия" },
-{ text: "Что принадлежит тебе, но чаще это используют другие?", answer: "Имя" },
-{ text: "Что можно держать правой рукой, но нельзя левой?", answer: "Левую руку" },
-{ text: "Что становится больше, если его поставить вверх ногами?", answer: "Число 6" }
+  { text: "Имя вашего любимого человека(Жена/Муж)", answer: "Юля" },
+  { text: "Имя вашего ребенка", answer: "Василиса" },
+  { text: "📅 Какой сейчас год?", answer: "2026" },
+  { text: "Сколько струн у балалайки?", answer: "3" },
+  { text: "Имя вашего любимого начальника", answer: "Сергей Викторович" },
+  { text: "В какой стране, недавно обнаружили комаров?", answer: "Исландия" },
+  { text: "Что принадлежит тебе, но чаще это используют другие?", answer: "Имя" },
+  { text: "Что можно держать правой рукой, но нельзя левой?", answer: "Левую руку" },
+  { text: "Что становится больше, если его поставить вверх ногами?", answer: "Число 6" }
 ];
-
 
 app.use(express.json());
 app.use(express.static('public'));
 
+// ========== ИЗМЕНЁННЫЙ /status – добавляем testServo ==========
 app.get('/status', (req, res) => {
-  res.json({ quest: questState.current, completed: questState.completed });
+  const response = {
+    quest: questState.current,
+    completed: questState.completed,
+    testServo: testServoRequested   // новое поле
+  };
+  // Сбрасываем флаг после того, как отдали
+  testServoRequested = false;
+  res.json(response);
 });
 
 app.post('/submit', (req, res) => {
@@ -44,6 +54,13 @@ app.post('/submit', (req, res) => {
   } else {
     res.json({ success: false, message: "Квесты уже завершены!" });
   }
+});
+
+// ========== НОВЫЙ ОБРАБОТЧИК ДЛЯ ТЕСТА СЕРВО ==========
+app.post('/test-servo', (req, res) => {
+  testServoRequested = true;
+  console.log("🔧 Тест серво запрошен");
+  res.json({ success: true });
 });
 
 // ========== СБРОС (РАБОТАЕТ И POST, И GET) ==========
